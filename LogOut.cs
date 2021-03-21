@@ -108,14 +108,14 @@ namespace МатюшкинАлексейLogTest
 
         public void Warning(string message, Exception e)
         {
-           
 
+            WritingMsg(message, e, "Warning");
             //Успешное завершение
         }
 
         public void WarningUnique(string message)
         {
-            throw new NotImplementedException();
+            //WritingMsg(message, e, "Warning");
         }
 
 
