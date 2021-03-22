@@ -24,8 +24,9 @@ namespace МатюшкинАлексейLogTest
         public MainWindow()
         {
             InitializeComponent();
+            
         }
-
+        LogOut logOut = new LogOut();
         private void start_Click(object sender, RoutedEventArgs e)
         {
             //string dirPath = Directory.GetCurrentDirectory() + "\\" + DateTime.Now.ToShortDateString().ToString();
@@ -45,7 +46,7 @@ namespace МатюшкинАлексейLogTest
 
             Exception ex=  new Exception ("An error occurred pi doing something");
             string[] ars = new string[] {"Alexey","Maximovish","Matyushkin" };
-            LogOut logOut = new LogOut();
+            
             logOut.Warning("New Error3445",ex);
             logOut.WarningUnique("Error145 Message");
             logOut.WritingMsg("WritingStore", "Orn", ars);
