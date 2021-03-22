@@ -46,7 +46,7 @@ namespace МатюшкинАлексейLogTest
 
         public void ErrorUnique(string message, Exception e)
         {
-            throw new NotImplementedException();
+            WritingMsgUnique(message,e, "ErrorUnique");
         }
 
         //Критичная ошибка:приложение не может далее функционировать
@@ -257,7 +257,53 @@ namespace МатюшкинАлексейLogTest
             }
         }
 
-        public void WritingMsg(string message,string TypeOfError, params object[] args )
+
+
+        public void WritingMsgUnique(string message, Exception e, string TypeOfError)
+        {
+            //Проверка на существование пути
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            //Проверка на существование файла
+            if (!File.Exists(dirPath + @"\" + fileName))
+            {/*все пропало, файла нет, надо срочно что-то делать*/
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            System.Threading.Thread.Sleep(100);
+
+            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
+            {
+
+
+                // преобразуем строку в байты
+                byte[] array = new byte[fstream.Length];
+                // считываем данные
+                fstream.Read(array, 0, array.Length);
+                // декодируем байты в строку
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+
+                if (!textFromFile.Contains(e.StackTrace))
+                {
+                    message = message.Insert(0, "  " + e.StackTrace + "\t");
+                    message = message.Insert(0, "  " + TypeOfError);
+                    message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
+                    message = message.Insert(message.Length, "\n");
+
+                    fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
+                    fstream.Flush();
+
+                }
+
+
+            }
+        }
+
+            public void WritingMsg(string message,string TypeOfError, params object[] args )
         {
             //Проверка на существование пути
             if (!Directory.Exists(dirPath))
@@ -284,6 +330,7 @@ namespace МатюшкинАлексейLogTest
                 // декодируем байты в строку
                 string textFromFile = System.Text.Encoding.Default.GetString(array);
                 
+                if(args!=null)
                 for(int i=1;i<=args.Length;i++)
                 {
                     message = message.Insert(0, args[args.Length-i] as string) +" ";
