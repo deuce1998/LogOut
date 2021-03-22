@@ -44,10 +44,12 @@ namespace МатюшкинАлексейLogTest
             //}t
 
             Exception ex=  new Exception ("An error occurred pi doing something");
-
+            string[] ars = new string[] {"Alexey","Maximovish","Matyushkin" };
             LogOut logOut = new LogOut();
             logOut.Warning("New Error3445",ex);
-            logOut.Warning("Error145", ex);
+            logOut.WarningUnique("Error145 Message");
+            logOut.WritingMsg("WritingStore", "Orn", ars);
+            logOut.SystemInfo("System info and ATC",null);
 
         }
     }

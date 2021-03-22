@@ -9,39 +9,39 @@ namespace МатюшкинАлексейLogTest
 {
     class LogOut :ILog
     {
-        string dirPath = Directory.GetCurrentDirectory() + "\\" + DateTime.Now.ToShortDateString().ToString();
+        string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
         string fileName = DateTime.Now.ToShortDateString().ToString()+".txt";
         public void Debug(string message)
         {
+            WritingMsg(message, "Debug");
             
-
-            throw new NotImplementedException();
         }
 
         public void Debug(string message, Exception e)
         {
 
-            throw new NotImplementedException();
+            WritingMsg(message, e, "Debug");
         }
 
         public void DebugFormat(string message, params object[] args)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, "DebugFormat", args);
         }
 
         public void Error(string message)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, "Error");
+
         }
 
         public void Error(string message, Exception e)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, e, "Error");
         }
 
         public void Error(Exception ex)
         {
-            throw new NotImplementedException();
+            WritingMsgUnique(ex, "Error");
         }
 
         public void ErrorUnique(string message, Exception e)
@@ -52,58 +52,38 @@ namespace МатюшкинАлексейLogTest
         //Критичная ошибка:приложение не может далее функционировать
         public void Fatal(string message)
         {
-            //Warning(message);
-            Environment.Exit(1);
+            WritingMsg(message, "Fatal");
         }
 
         public void Fatal(string message, Exception e)
         {
-            Warning(message,e);
-            System.Environment.FailFast("При работе программы, возникла фатальная ошибка!",e);
+
+            WritingMsg(message,e, "Fatal");
         }
 
         public void Info(string message)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, "Info");
         }
 
         public void Info(string message, Exception e)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, e, "Info");
         }
 
         public void Info(string message, params object[] args)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, "Info", args);
         }
 
         public void SystemInfo(string message, Dictionary<object, object> properties = null)
         {
-            throw new NotImplementedException();
+            WritingMsg(message, "SystemInfo", properties);
         }
 
         public void Warning(string message)
         {
-            //Проверка на существование пути
-            if (!Directory.Exists(dirPath))
-            {
-                Directory.CreateDirectory(dirPath);
-                File.Create(dirPath + @"\" + fileName);
-            }
-
-            //Проверка на существование файла
-            if (!(File.Exists(dirPath + @"\" + fileName)))
-            {/*все пропало, файла нет, надо срочно что-то делать*/
-                File.Create(dirPath + @"\" + fileName);
-            }
-
-            //Запись сообщения в файл
-            using (StreamWriter sw = new StreamWriter(dirPath + @"\" + fileName, true, System.Text.Encoding.Default))
-            {
-                sw.WriteLine(message);
-            }
-            
-            //Успешное завершение
+            WritingMsg(message, "Warning");
         }
 
         public void Warning(string message, Exception e)
@@ -115,7 +95,7 @@ namespace МатюшкинАлексейLogTest
 
         public void WarningUnique(string message)
         {
-            //WritingMsg(message, e, "Warning");
+            WritingMsgUnique(message, "Warning");
         }
 
 
@@ -135,12 +115,125 @@ namespace МатюшкинАлексейLogTest
                 File.Create(dirPath + @"\" + fileName);
             }
 
-            System.Threading.Thread.Sleep(1000);
-            
+            System.Threading.Thread.Sleep(100);
+
             using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
             {
                 // чтение из файла
+                // преобразуем строку в байты
+                byte[] array = new byte[fstream.Length];
+                // считываем данные
+                fstream.Read(array, 0, array.Length);
+                // декодируем байты в строку
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                message = message.Insert(0, "  " + e.StackTrace);
+                message = message.Insert(0, "  " + TypeOfError);
+                message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
+                message = message.Insert(message.Length, "\n");
+                fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
+            }
+        }
 
+        public void WritingMsg(string message, string TypeOfError)
+        {
+            //Проверка на существование пути
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            //Проверка на существование файла
+            if (!File.Exists(dirPath + @"\" + fileName))
+            {/*все пропало, файла нет, надо срочно что-то делать*/
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            System.Threading.Thread.Sleep(100);
+
+            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.Write))
+            {
+                // чтение из файла
+                // преобразуем строку в байты
+                byte[] array = new byte[fstream.Length];
+                // считываем данные
+                fstream.Read(array, 0, array.Length);
+                // декодируем байты в строку
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                
+                message = message.Insert(0, "  " + TypeOfError);
+                message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
+                message = message.Insert(message.Length, "\n");
+                fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
+            }
+        }
+
+        public void WritingMsgUnique(string message, string TypeOfError)
+        {
+                    //Проверка на существование пути
+                    if (!Directory.Exists(dirPath))
+                    {
+                        Directory.CreateDirectory(dirPath);
+                        File.Create(dirPath + @"\" + fileName);
+                    }
+
+                    //Проверка на существование файла
+                    if (!File.Exists(dirPath + @"\" + fileName))
+                    {/*все пропало, файла нет, надо срочно что-то делать*/
+                        File.Create(dirPath + @"\" + fileName);
+                    }
+
+                    System.Threading.Thread.Sleep(100);
+
+                    using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        // чтение из файла
+
+                        // преобразуем строку в байты
+                        byte[] array = new byte[fstream.Length];
+                        // считываем данные
+                        fstream.Read(array, 0, array.Length);
+                        // декодируем байты в строку
+                        string textFromFile = System.Text.Encoding.Default.GetString(array);
+
+                        if (!textFromFile.Contains(message))
+                        {
+                            
+                            message = message.Insert(0, "  " + TypeOfError);
+                            message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
+                            message = message.Insert(message.Length, "\n");
+
+                            fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
+                            fstream.Flush();
+
+                        }
+
+
+                    }
+        }
+
+        public void WritingMsgUnique(Exception e, string TypeOfError)
+        {
+            //Проверка на существование пути
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            //Проверка на существование файла
+            if (!File.Exists(dirPath + @"\" + fileName))
+            {/*все пропало, файла нет, надо срочно что-то делать*/
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            System.Threading.Thread.Sleep(100);
+
+            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
+            {
+                string message = "";
+                // чтение из файла
+                
                 // преобразуем строку в байты
                 byte[] array = new byte[fstream.Length];
                 // считываем данные
@@ -148,7 +241,7 @@ namespace МатюшкинАлексейLogTest
                 // декодируем байты в строку
                 string textFromFile = System.Text.Encoding.Default.GetString(array);
 
-                if (!textFromFile.Contains(message))
+                if (!textFromFile.Contains(e.StackTrace))
                 {
                     message = message.Insert(0, "  " + e.StackTrace);
                     message = message.Insert(0, "  " + TypeOfError);
@@ -161,6 +254,85 @@ namespace МатюшкинАлексейLogTest
                 }
 
 
+            }
+        }
+
+        public void WritingMsg(string message,string TypeOfError, params object[] args )
+        {
+            //Проверка на существование пути
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            //Проверка на существование файла
+            if (!File.Exists(dirPath + @"\" + fileName))
+            {/*все пропало, файла нет, надо срочно что-то делать*/
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            System.Threading.Thread.Sleep(100);
+
+            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
+            {
+                // чтение из файла
+                // преобразуем строку в байты
+                byte[] array = new byte[fstream.Length];
+                // считываем данные
+                fstream.Read(array, 0, array.Length);
+                // декодируем байты в строку
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                
+                for(int i=1;i<=args.Length;i++)
+                {
+                    message = message.Insert(0, args[args.Length-i] as string) +" ";
+                }
+                
+                
+                message = message.Insert(0, "  " + TypeOfError);
+                message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
+                message = message.Insert(message.Length, "\n");
+                fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
+            }
+        }
+
+        public void WritingMsg(string message, string TypeOfError, Dictionary<object, object> properties = null)
+        {
+            //Проверка на существование пути
+            if (!Directory.Exists(dirPath))
+            {
+                Directory.CreateDirectory(dirPath);
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            //Проверка на существование файла
+            if (!File.Exists(dirPath + @"\" + fileName))
+            {/*все пропало, файла нет, надо срочно что-то делать*/
+                File.Create(dirPath + @"\" + fileName);
+            }
+
+            System.Threading.Thread.Sleep(100);
+
+            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
+            {
+                // чтение из файла
+                // преобразуем строку в байты
+                byte[] array = new byte[fstream.Length];
+                // считываем данные
+                fstream.Read(array, 0, array.Length);
+                // декодируем байты в строку
+                string textFromFile = System.Text.Encoding.Default.GetString(array);
+                if(!(properties == null))
+                foreach(var s in properties)
+                {
+                    message = message.Insert(0, s.Value.ToString()) + " "; 
+                }
+
+                message = message.Insert(0, "  " + TypeOfError);
+                message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
+                message = message.Insert(message.Length, "\n");
+                fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
             }
         }
     }
