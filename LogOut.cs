@@ -23,7 +23,7 @@ namespace МатюшкинАлексейLogTest
         public void Debug(string message, Exception e)
         {
 
-            WritingMsg(message, e, "Debug");
+            WritingMsg(message, "Debug", e);
         }
 
         public void DebugFormat(string message, params object[] args)
@@ -33,13 +33,13 @@ namespace МатюшкинАлексейLogTest
 
         public void Error(string message)
         {
-            WritingMsg(message, "Error");
+            WritingMsg( "Error",message);
 
         }
 
         public void Error(string message, Exception e)
         {
-            WritingMsg(message, e, "Error");
+            WritingMsg(message, "Error", e);
         }
 
         public void Error(Exception ex)
@@ -48,7 +48,7 @@ namespace МатюшкинАлексейLogTest
             if (Unique != null && !Unique.Contains(DateTime.Now.ToString("dd:MM:yyyy") + "      " + ex.StackTrace))
             {
                 Unique.Add(DateTime.Now.ToString("dd:MM:yyyy") + "      " + ex.StackTrace);
-                WritingMsgUnique(ex, "Error");
+                WritingMsgUnique("Error",ex.StackTrace);
             }
         }
 
@@ -57,30 +57,30 @@ namespace МатюшкинАлексейLogTest
             if(Unique != null && !Unique.Contains(DateTime.Now.ToString("dd:MM:yyyy") + "   " + "Error" + "   " + e.StackTrace))
             {
                 Unique.Add(DateTime.Now.ToString("dd:MM:yyyy") + "   " + "Error" + "   " + e.StackTrace);
-                WritingMsgUnique(message,e, "ErrorUnique");
+                WritingMsgUnique("ErrorUnique",message,e.StackTrace);
             } 
         }
 
         
         public void Fatal(string message)
         {
-            WritingMsg(message, "Fatal");
+            WritingMsg("Fatal",message);
         }
 
         public void Fatal(string message, Exception e)
         {
 
-            WritingMsg(message,e, "Fatal");
+            WritingMsg(message, "Fatal",e);
         }
 
         public void Info(string message)
         {
-            WritingMsg(message, "Info");
+            WritingMsg("Info", message);
         }
 
         public void Info(string message, Exception e)
         {
-            WritingMsg(message, e, "Info");
+            WritingMsg(message, "Info", e);
         }
 
         public void Info(string message, params object[] args)
@@ -96,13 +96,13 @@ namespace МатюшкинАлексейLogTest
 
         public void Warning(string message)
         {
-            WritingMsg(message, "Warning");
+            WritingMsg("Warning", message);
         }
 
         public void Warning(string message, Exception e)
         {
 
-            WritingMsg(message, e, "Warning");
+            WritingMsg(message, "Warning", e);
             
         }
 
@@ -111,7 +111,7 @@ namespace МатюшкинАлексейLogTest
             if (Unique!=null && !Unique.Contains(DateTime.Now.ToString("dd:MM:yyyy") + "   " + "WarningUnique") )
             {
                 Unique.Add(DateTime.Now.ToString("dd:MM:yyyy") + "   " + "WarningUnique");
-                WritingMsgUnique(message, "Warning");
+                WritingMsgUnique( "Warning",message);
             }
             
         }
@@ -140,7 +140,7 @@ namespace МатюшкинАлексейLogTest
 
         }
 
-        public void WritingMsg(string message, Exception e, string TypeOfError)
+        public void WritingMsg(string message, string TypeOfError, Exception e)
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -162,7 +162,7 @@ namespace МатюшкинАлексейLogTest
             }
         }
 
-        public void WritingMsg(string message, string TypeOfError)
+        public void WritingMsg( string TypeOfError,string message)
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -170,33 +170,13 @@ namespace МатюшкинАлексейLogTest
             if (CheckingForExistence())
             using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.Write))
             {
-                byte[] array = new byte[fstream.Length];
-                fstream.Read(array, 0, array.Length);
-                string textFromFile = System.Text.Encoding.Default.GetString(array);
                 message = message.Insert(0, "  " + TypeOfError);
                 message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
                 message = message.Insert(message.Length, "\n");
                 fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
             }
         }
-
-        public void WritingMsgUnique(string message, string TypeOfError)
-        {
-                string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
-                string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
-
-                if (CheckingForExistence())
-                using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
-                {
-                     message = message.Insert(0, "  " + TypeOfError);
-                     message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
-                     message = message.Insert(message.Length, "\n");
-                     fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
-                     fstream.Flush();
-                }
-        }
-
-        public void WritingMsgUnique(Exception e, string TypeOfError)
+        public void WritingMsgUnique(string TypeOfError, string message ="", string e = "")
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -204,43 +184,18 @@ namespace МатюшкинАлексейLogTest
             if (CheckingForExistence())
             using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
             {
-                string message = "";
-                byte[] array = new byte[fstream.Length];
-                fstream.Read(array, 0, array.Length);
-                string textFromFile = System.Text.Encoding.Default.GetString(array);
-                if (!textFromFile.Contains(e.StackTrace))
-                {
-                    message = message.Insert(0, "  " + e.StackTrace);
+                
+                    message = message.Insert(0, "  " + e);
                     message = message.Insert(0, "  " + TypeOfError);
                     message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
                     message = message.Insert(message.Length, "\n");
                     fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
                     fstream.Flush();
-                }
+                
             }
         }
 
-        public void WritingMsgUnique(string message, Exception e, string TypeOfError)
-        {
-            string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
-            string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
-            if (CheckingForExistence())
-            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
-            {
-                byte[] array = new byte[fstream.Length];
-                fstream.Read(array, 0, array.Length);
-                string textFromFile = System.Text.Encoding.Default.GetString(array);
-                if (!textFromFile.Contains(e.StackTrace))
-                {
-                    message = message.Insert(0, "  " + e.StackTrace + "\t");
-                    message = message.Insert(0, "  " + TypeOfError);
-                    message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
-                    message = message.Insert(message.Length, "\n");
-                    fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
-                    fstream.Flush();
-                }
-            }
-        }
+       
 
         public void WritingMsg(string message,string TypeOfError, params object[] args )
         {
