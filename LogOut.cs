@@ -90,7 +90,6 @@ namespace МатюшкинАлексейLogTest
 
         public void SystemInfo(string message, Dictionary<object, object> properties = null)
         {
-            if (!(properties == null))
                 WritingMsg(message, "SystemInfo", properties);
         }
 
@@ -162,20 +161,7 @@ namespace МатюшкинАлексейLogTest
             }
         }
 
-        public void WritingMsg( string TypeOfError,string message)
-        {
-            string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
-            string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
-
-            if (CheckingForExistence())
-            using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.Write))
-            {
-                message = message.Insert(0, "  " + TypeOfError);
-                message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
-                message = message.Insert(message.Length, "\n");
-                fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
-            }
-        }
+        
         public void WritingMsgUnique(string TypeOfError, string message ="", string e = "")
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
@@ -184,20 +170,18 @@ namespace МатюшкинАлексейLogTest
             if (CheckingForExistence())
             using (FileStream fstream = new FileStream(dirPath + @"\" + fileName, FileMode.Open, FileAccess.ReadWrite))
             {
-                
                     message = message.Insert(0, "  " + e);
                     message = message.Insert(0, "  " + TypeOfError);
                     message = message.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  ");
                     message = message.Insert(message.Length, "\n");
                     fstream.Write(Encoding.Default.GetBytes(message), 0, Encoding.Default.GetBytes(message).Length);
                     fstream.Flush();
-                
             }
         }
 
        
 
-        public void WritingMsg(string message,string TypeOfError, params object[] args )
+        public void WritingMsg(string TypeOfError,string message, params object[] args )
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -231,6 +215,7 @@ namespace МатюшкинАлексейLogTest
                 fstream.Read(array, 0, array.Length);
                 string textFromFile = System.Text.Encoding.Default.GetString(array);
                 
+                if(properties != null)
                 foreach(var s in properties)
                 {
                     message = message.Insert(0, s.Value.ToString()) + " "; 
