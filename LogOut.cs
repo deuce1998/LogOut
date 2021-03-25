@@ -115,7 +115,7 @@ namespace МатюшкинАлексейLogTest
             
         }
 
-        public bool CheckingForExistence()
+        private bool CheckingForExistence()
         {
             try
             { 
@@ -139,7 +139,7 @@ namespace МатюшкинАлексейLogTest
 
         }
 
-        public void WritingMsg(string message, string TypeOfError, Exception e)
+        private void WritingMsg(string message, string TypeOfError, Exception e)
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -161,8 +161,8 @@ namespace МатюшкинАлексейLogTest
             }
         }
 
-        
-        public void WritingMsgUnique(string TypeOfError, string message ="", string e = "")
+
+        private void WritingMsgUnique(string TypeOfError, string message ="", string e = "")
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -179,9 +179,9 @@ namespace МатюшкинАлексейLogTest
             }
         }
 
-       
 
-        public void WritingMsg(string TypeOfError,string message, params object[] args )
+
+        private void WritingMsg(string TypeOfError,string message, params object[] args )
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";
@@ -203,7 +203,7 @@ namespace МатюшкинАлексейLogTest
             }
         }
 
-        public void WritingMsg(string message, string TypeOfError, Dictionary<object, object> properties = null)
+        private void WritingMsg(string message, string TypeOfError, Dictionary<object, object> properties = null)
         {
             string dirPath = Directory.GetCurrentDirectory() + "\\Logs\\" + DateTime.Now.ToShortDateString().ToString();
             string fileName = DateTime.Now.ToShortDateString().ToString() + ".txt";

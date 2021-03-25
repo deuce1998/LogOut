@@ -49,7 +49,7 @@ namespace МатюшкинАлексейLogTest
             
             logOut.Warning("New Error3445",ex);
             logOut.WarningUnique("Error145 Message");
-            logOut.WritingMsg("WritingStore", "Orn", ars);
+            
             logOut.SystemInfo("System info and ATC",null);
 
         }
